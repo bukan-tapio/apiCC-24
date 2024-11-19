@@ -1,5 +1,5 @@
 import express from "express";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase-config.js";
 import { Todo } from "./todo-schema.js";
 import bodyParser from "body-parser";
@@ -31,6 +31,22 @@ app.post("/todos", async (req, res) => {
     res.send("Document has been saved!");
   } catch (e) {
     console.error("Error adding document: ", e);
+  }
+});
+
+// Route untuk mendapatkan semua todos
+app.get("/todos", async (req, res) => {
+  try {
+    const todosCollectionRef = todosCollection;
+    const todosSnapshot = await getDocs(todosCollectionRef);
+    const todos = todosSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.json(todos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Terjadi kesalahan saat mengambil data todos");
   }
 });
 
