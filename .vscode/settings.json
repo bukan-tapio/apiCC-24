@@ -8,5 +8,6 @@
     "statusBarItem.remoteBackground": "#a9b665",
     "statusBarItem.remoteForeground": "#15202b"
   },
-  "peacock.color": "#a9b665"
+  "peacock.color": "#a9b665",
+  "window.zoomLevel": 1
 }
