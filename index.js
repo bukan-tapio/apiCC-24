@@ -17,6 +17,7 @@ import {
 
 const app = express();
 const port = parseInt(process.env.PORT) || 8080;
+console.log(port);
 
 const checkIfLoggedIn = (req, res, next) => {
   const token = req.headers.authorization?.split(" ").at(-1);
@@ -142,6 +143,6 @@ app.post("/auth/login", async (req, res) => {
   }
 });
 
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Example app listening on port ${port}`);
+app.listen(port, () => {
+  console.log(`helloworld: listening on port ${port}`);
 });
