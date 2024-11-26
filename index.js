@@ -7,12 +7,32 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { db } from "./firebase-config.js";
+import { db, auth } from "./firebase-config.js";
 import { Todo } from "./todo-schema.js";
 import bodyParser from "body-parser";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const app = express();
 const port = 3000;
+
+const checkIfLoggedIn = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ").at(-1);
+
+  // console.log("User token:", token);
+
+  // Validasi token
+
+  const tokenIsValid = token !== undefined;
+
+  if (tokenIsValid) {
+    next();
+  } else {
+    res.status(401).send("Unauthorized: Please log in first.");
+  }
+};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -25,7 +45,7 @@ app.get("/", (req, res) => {
 const todosCollection = collection(db, "todos");
 
 // Arrow Function
-app.post("/todos", async (req, res) => {
+app.post("/todos", checkIfLoggedIn, async (req, res) => {
   try {
     const todo = new Todo(
       req.body.author,
@@ -89,6 +109,36 @@ app.delete("/todos/:todoId", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Terjadi kesalahan saat menghapus data todos");
+  }
+});
+
+app.post("/auth/register", async (req, res) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    await createUserWithEmailAndPassword(auth, email, password);
+
+    res.send("Register success!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
+app.post("/auth/login", async (req, res) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    const user = await signInWithEmailAndPassword(auth, email, password);
+
+    console.log(user);
+
+    res.send(JSON.parse(JSON.stringify(user.user)));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
   }
 });
 
