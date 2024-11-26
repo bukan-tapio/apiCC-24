@@ -131,17 +131,17 @@ app.post("/auth/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const user = await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
 
-    console.log(user);
+    console.log(result.user);
 
-    res.send(JSON.parse(JSON.stringify(user.user)));
+    res.send(JSON.parse(JSON.stringify(result.user)));
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
   }
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`);
 });
