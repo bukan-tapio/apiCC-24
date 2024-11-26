@@ -1,5 +1,12 @@
 import express from "express";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "./firebase-config.js";
 import { Todo } from "./todo-schema.js";
 import bodyParser from "body-parser";
@@ -47,6 +54,41 @@ app.get("/todos", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Terjadi kesalahan saat mengambil data todos");
+  }
+});
+
+// /todos/4zs57ZVKFUOa4RdMhQXK
+app.put("/todos/:todoId", async (req, res) => {
+  try {
+    const todoId = req.params.todoId;
+    const description = req.body.description;
+    const title = req.body.title;
+
+    const docToUpdate = doc(todosCollection, todoId);
+
+    await updateDoc(docToUpdate, {
+      description: description,
+      title,
+    });
+
+    res.send("Document has been updated!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Terjadi kesalahan saat mengambil data todos");
+  }
+});
+
+app.delete("/todos/:todoId", async (req, res) => {
+  try {
+    const todoId = req.params.todoId;
+    const docToDelete = doc(todosCollection, todoId);
+
+    await deleteDoc(docToDelete);
+
+    res.send("Document has been deleted!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Terjadi kesalahan saat menghapus data todos");
   }
 });
 
